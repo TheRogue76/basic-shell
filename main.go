@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -11,7 +12,19 @@ import (
 func execInput(in string) error {
 	input := strings.TrimSuffix(in, "\n")
 
-	cmd := exec.Command(input)
+	args := strings.Split(input, " ")
+
+	switch args[0] {
+	case "cd":
+		if len(args) < 2 {
+			return errors.New("path required")
+		}
+		return os.Chdir(args[1])
+	case "exit":
+		os.Exit(0)
+	}
+
+	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
